@@ -68,19 +68,7 @@ class Globopt:
         self.x_ks.append(box.center())
 
         counter = 0
-        while func(work_list.at(0).domain.to_point()).rad() >= 2 * eps:
-
-        # while counter < 100:
-            # print(counter)
-            # for i in range(work_list.size()):
-            #     for j in range(work_list.at(i).domain.dim()):
-            #         inter = work_list.at(i).domain.to_point()[j]
-            #         print(inter.a, inter.b, end=' | ')
-
-            #     print()
-            # print('#####################################')
-
-
+        while func(work_list.at(0).domain.to_point()).rad() >= eps:
             list_size = work_list.size()
             lead_est = upper_est
             lead_ind = 0
@@ -137,7 +125,8 @@ class Globopt:
             box = work_list.at(i).domain
             box.plot_2d_box()
 
-        plt.title(self.func.name())
+        plt.title(f'Boxes: {self.func.name()}')
+        plt.savefig(f'{self.func.name()}Boxes.png')
         plt.show()
 
     def plot_boxes_centers(self, work_list: WorkList) -> None:
@@ -152,8 +141,9 @@ class Globopt:
             x.append(center[0])
             y.append(center[1])
 
-        plt.plot(x, y)
-        plt.title(self.func.name())
+        plt.plot(np.flip(x), np.flip(y))
+        plt.title(f'Centers: {self.func.name()}')
+        plt.savefig(f'{self.func.name()}Centers.png')
         plt.show()
 
     def plot_boxes_rads(self, work_list: WorkList) -> None:
@@ -163,7 +153,8 @@ class Globopt:
             rads.append(rad)
 
         plt.semilogy(np.array([i for i in range(work_list.size())]), np.array(rads))
-        plt.title(self.func.name())
+        plt.title(f'Rads: {self.func.name()}')
+        plt.savefig(f'{self.func.name()}Rads.png')
         plt.show()
 
     def plot_convergence(self, work_list: WorkList) -> None:
@@ -174,7 +165,8 @@ class Globopt:
         ])
 
         plt.semilogy(np.array([i for i in range(len(self.x_ks))]), np.array(dists))
-        plt.title(self.func.name())
+        plt.title(f'Convergence: {self.func.name()}')
+        plt.savefig(f'{self.func.name()}Convergence.png')
         plt.show()
 
     def _min_dist_to_point(self, points: npt.ArrayLike, point: npt.ArrayLike) -> float:

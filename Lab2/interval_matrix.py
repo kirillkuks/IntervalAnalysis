@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+import numpy.typing as npt
 
 from abc import ABC, abstractclassmethod
 
@@ -42,14 +43,26 @@ class Interval:
         return Interval(min([self._a * a, self._a * b, self._b * a, self._b * b]),
                         max([self._a * a, self._a * b, self._b * a, self._b * b]))
 
-    def scale(self, mul: int) -> Interval:
-        self._a *= mul
-        self._b *= mul
+    def __truediv__(self, other: Interval) -> Interval:
+        a, b = other.interval_boundaries()
 
-        if mul < 0:
-            self._a, self._b == self._b, self._a
-        
-        return self.copy()
+        return self * Interval(1 / b, 1/ a)
+
+    def __pow__(self, power: int) -> Interval:
+        interval = Interval(1, 1)
+
+        for _ in range(power):
+            interval = interval * self
+
+        return interval
+
+    def scale(self, mul: int) -> Interval:
+        a, b = self.interval_boundaries()
+
+        a *= mul
+        b *= mul
+
+        return Interval(min(a, b), max(a, b))
 
     def rad(self) -> float:
         return (self._b - self._a) / 2
@@ -267,6 +280,16 @@ class IntervalVector(ABC):
 
         return iv
 
+    @staticmethod
+    def create(intervals: npt.ArrayLike) -> IntervalVector:
+        size = intervals.size
+        ivector = IntervalVector(size)
+        
+        for i in range(size):
+            ivector.set(i, intervals[i])
+
+        return ivector
+
     def __init__(self, size: int) -> None:
         assert size > 0
 
@@ -292,6 +315,14 @@ class IntervalVector(ABC):
             iv.set(i, self.at(i) + other.at(i))
 
         return iv
+
+    def __sub__(self, other: IntervalVector) -> IntervalVector:
+        size = self.sz()
+        assert size == other.sz()
+
+        return IntervalVector.create(np.array([
+            self.at(i) - other.at(i) for i in range(size)
+        ]))
 
     def sz(self) -> int:
         return self.vector.size

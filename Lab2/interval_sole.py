@@ -3,6 +3,23 @@ from interval_matrix import IntervalMatrix, IntervalVector, Interval, Matrix
 import numpy as np
 import matplotlib.pyplot as plt
 
+class Task:
+    @staticmethod
+    def f1l(x: float) -> float:
+        return (4 - 2 * x) / 3
+
+    @staticmethod
+    def f1r(x: float) -> float:
+        return (5 - 2 * x) / 3
+
+    @staticmethod
+    def f2l(x: float) -> float:
+        return x
+
+    @staticmethod
+    def f2r(x: float) -> float:
+        return x / 2
+
 
 class IntervalSole:
     def __init__(self, A: IntervalMatrix, b: IntervalVector) -> None:
@@ -20,6 +37,11 @@ class IntervalSole:
         LA = self.A.mul_matrix(self.L)
 
         m = interval_identity_matrix.sub_interval_matrix(LA)
+        print(m.at(0, 0).interval_boundaries())
+        print(m.at(0, 1).interval_boundaries())
+        print(m.at(1, 0).interval_boundaries())
+        print(m.at(1, 1).interval_boundaries())
+        print(m.abs_matrix().spectral_radius())
 
         Lb = self.L.mul_interval_vector(self.b)
 
@@ -52,15 +74,26 @@ class IntervalSole:
         C = identity_matrix.sub_interval_matrix(LA)
 
         eta = C.norm_inf()
+        print(f'Eta = {eta}')
         assert(0 <= eta < 1)
 
         theta = Lb.norm_inf() / (1 - eta)
+        print(f'Theta = {theta}')
         x = IntervalVector(size)
         
         for i in range(size):
             x.set(i, Interval(-theta, theta))
 
         return x
+
+    def _plot_F(self, a: float, b: float) -> None:
+        x = np.linspace(a, b, 100);
+        ys = np.array([
+            Task.f1l(x), Task.f1r(x), Task.f2l(x), Task.f2r(x)
+        ])
+        
+        for y in ys:
+            plt.plot(x, y, 'k')
 
     def _plot_interval_2Dbars(self) -> None:
         for x_k, i in zip(self.x_iters, range(len(self.x_iters))):
@@ -69,6 +102,9 @@ class IntervalSole:
             plt.plot(np.array([a, b, b, a, a]), np.array([c, c, d, d, c]), label=f'iter num = {i}')
         
         plt.legend(loc='upper left')
+        plt.title('Boxes')
+        self._plot_F(-2, 2)
+        plt.savefig('LinearBoxes.png')
         plt.show()
 
     def _plot_bars_radiuses(self) -> None:
@@ -77,7 +113,9 @@ class IntervalSole:
         inter_nums = np.array([i for i in range(sz)])
         rads = np.array([x.max_rad() for x in self.x_iters])
 
-        plt.plot(inter_nums, rads)
+        plt.semilogy(inter_nums, rads)
+        plt.title('Radiuses')
+        plt.savefig('LinearRads.png')
         plt.show()
 
     def _plot_convergence(self) -> None:
@@ -88,5 +126,7 @@ class IntervalSole:
         iter_nums = np.array([i for i in range(sz)])
         center_deltas = np.array([np.linalg.norm(x.center_point() - last_center) for x in self.x_iters])
 
-        plt.plot(iter_nums, center_deltas)
+        plt.semilogy(iter_nums, center_deltas)
+        plt.title('Convergence')
+        plt.savefig('LinearConv.png')
         plt.show()

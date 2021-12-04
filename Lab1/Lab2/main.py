@@ -1,6 +1,7 @@
 from matplotlib.pyplot import semilogy
 from functions import Function, ThreeHumpCamelFunction, HimmelblauFunction, SphereFunction, BoothFunction
 from interval import Interval
+from box import Box
 
 from globopt0 import Globopt
 
@@ -10,6 +11,11 @@ import numpy as np
 def run(function: Function, eps: float) -> None:
     globopt = Globopt(function)
     est, work_list = globopt.globopt0(eps)
+
+    print('Lead boxes')
+    for i in range(5):
+        print(work_list.at(i).domain.center())
+        # print(f'{work_list.at(i).domain.at(0).a} -- {work_list.at(i).domain.at(0).b} || {work_list.at(i).domain.at(1).a} -- {work_list.at(i).domain.at(1).b}')
 
     globopt.plot_boxes(work_list)
     globopt.plot_boxes_centers(work_list)
@@ -38,9 +44,8 @@ def main():
 
     # run(ThreeHumpCamel(), 0.1)
 
-
-    # run(HimmelblauFunction(), 0.000001)
-    run(BoothFunction(), 0.0001)
+    run(HimmelblauFunction(), 0.00001)
+    # run(BoothFunction(), 0.00001)
     # run(SphereFunction(), 0.0001)
     # run(ThreeHumpCamelFunction(), 0.1)
 

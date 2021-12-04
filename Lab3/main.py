@@ -33,13 +33,19 @@ def init():
 
 
 def main():
-    A, b = init()
+    A, b = init_test()
 
     s = Sloe(A, b)
     print(s.tol(np.array([1, 1])))
     arg_max = s.max_tol()
     print(arg_max)
     print(s.tol(arg_max))
+
+    # print('Change right side')
+    # s.change_right_vector()
+
+    print('Change matrix')
+    s.change_matrix()
 
     return
 

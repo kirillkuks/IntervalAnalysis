@@ -1,6 +1,8 @@
 from interval_matrix import DefaultIntervalMatrix, Interval, TwoDimmensionalTaskMatrix, TwoDimmensionalTaskVector, Matrix, IntervalVector
 from interval_sole import IntervalSole
+from nonlinear_interval_sole import NonlinearIntervalSole, JacobianInterval, Task, Test
 
+import numpy as np
 from matplotlib import pyplot as plt
 
 
@@ -68,23 +70,32 @@ def test():
     print(id.matrix)
 
 
+def nonlinear():
+    pass
+
 def main():
     # test()
 
     sole = IntervalSole(TwoDimmensionalTaskMatrix(2, 3, Interval(1, 2)), TwoDimmensionalTaskVector(Interval(4, 5)))
+    sole.solve()
 
-    # imatrix = DefaultIntervalMatrix(2)
-    # imatrix.set(0, 0, Interval(1, 2))
-    # imatrix.set(0, 1, Interval(-2 / 3, 1 / 2))
-    # imatrix.set(1, 0, Interval(-2 / 3, 1 / 2))
-    # imatrix.set(1, 1, Interval(1, 2))
+    # NonlinearIntervalSole.create(np.array([
+    #         Test.f1, Test.f2
+    #     ]), JacobianInterval.create(np.array([
+    #         np.array([Test.J11, Test.J12]),
+    #         np.array([Test.J21, Test.J22])
+    #     ])), IntervalVector.create(np.array([
+    #     Interval(0, 1), Interval(0, 1)
+    #     ]))).solve()
 
-    # ivector = IntervalVector(2)
-    # ivector.set(0, Interval(-1, 1))
-    # ivector.set(1, Interval(-1, 1))
-    
-
-    # sole = IntervalSole(imatrix, ivector)
+    sole = NonlinearIntervalSole.create(np.array([
+            Task.f1, Task.f2
+        ]), JacobianInterval.create(np.array([
+            np.array([Task.J11, Task.J12]),
+            np.array([Task.J21, Task.J22])
+        ])), IntervalVector.create(np.array([
+            Interval(0.25, 4), Interval(0.25, 4)
+        ])))
 
     sole.solve()
 
