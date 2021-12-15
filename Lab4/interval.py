@@ -69,7 +69,7 @@ class Interval:
         return Interval(num - self._b, num - self._a)
 
     def rad(self) -> float:
-        return (self._b - self._a) / 2
+        return np.abs(self._b - self._a) / 2
 
     def center(self) -> float:
         return (self._a + self._b) / 2

@@ -23,7 +23,7 @@ class Solver(ABC):
             plt.plot(np.array([a, b, b, a, a]), np.array([c, c, d, d, c]), label=f'iter num = {i}')
         
         plt.title(f'{name} boxes')
-        # plt.legend(loc='upper left')
+        plt.legend()
         
         if save:
             plt.savefig(f'{name}Boxes.png')

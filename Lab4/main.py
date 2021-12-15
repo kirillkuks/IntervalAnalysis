@@ -56,9 +56,9 @@ def main():
     # print(i1.kaucher_mul(i2).interval_boundaries())
     # # print(i1.kaucher_sub(i2).interval_boundaries())
 
-    # A, b = init()
-    # z = Zyuzin.create(A, b)
-    # z.solve(1e-16)
+    A, b = init()
+    z = Zyuzin.create(A, b)
+    z.solve(1e-16)
 
     A, b = init_subdiff_task2()
     sn = SubdifferentialNewton(A, b)
