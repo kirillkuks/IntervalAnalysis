@@ -29,6 +29,26 @@ def init_test():
     return A, b
 
 
+def init_subdiff_task1():
+    line1 = IntervalVector.create(np.array([Interval(3, 4), Interval(5, 6)]))
+    line2 = IntervalVector.create(np.array([Interval(-1, 1), Interval(-3, 1)]))
+
+    b = IntervalVector.create(np.array([Interval(-3, 3), Interval(-1, 2)]))
+    A = IntervalMatrix.create(np.array([line1, line2]))
+
+    return A, b
+
+
+def init_subdiff_task2():
+    line1 = IntervalVector.create(np.array([Interval(3, 4), Interval(5, 6)]))
+    line2 = IntervalVector.create(np.array([Interval(-1, 1), Interval(-3, 1)]))
+
+    b = IntervalVector.create(np.array([Interval(-3, 4), Interval(-1, 2)]))
+    A = IntervalMatrix.create(np.array([line1, line2]))
+
+    return A, b
+
+
 def main():
     # i1 = Interval(1 / 2, 1 / 4)
     # i2 = Interval(-2 / 3, 2 / 3)
@@ -37,13 +57,12 @@ def main():
     # # print(i1.kaucher_sub(i2).interval_boundaries())
 
     # A, b = init()
-
     # z = Zyuzin.create(A, b)
-    # z.solve()
+    # z.solve(1e-16)
 
-    A, b = init_test()
+    A, b = init_subdiff_task2()
     sn = SubdifferentialNewton(A, b)
-    sn.solve()
+    sn.solve(1e-16)
 
     return
 

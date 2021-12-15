@@ -269,6 +269,23 @@ class DefaultIntervalMatrix(IntervalMatrix):
 
 class IntervalVector(ABC):
     @staticmethod
+    def diff(iv1: IntervalVector, iv2: IntervalVector) -> float:
+        size = iv1.sz()
+        assert size == iv2.sz()
+
+        intervals = []
+        
+        for i in range(size):
+            a1, b1 = iv1.at(i).interval_boundaries()
+            a2, b2 = iv2.at(i).interval_boundaries()
+
+            a, b = (a1 - a2), (b1 - b2)
+            
+            intervals.append(Interval(min(a, b), max(a, b)))
+
+        return IntervalVector.create(np.array(intervals)).norm2()
+
+    @staticmethod
     def intersection(iv1: IntervalVector, iv2: IntervalVector) -> IntervalVector:
         size = iv1.sz()
         assert size == iv2.sz()
@@ -327,8 +344,13 @@ class IntervalVector(ABC):
     def sz(self) -> int:
         return self.vector.size
 
+    def norm2(self) -> float:
+        return np.sqrt(np.sum(np.array([
+            interval.abs() ** 2 for interval in self.vector
+        ])))
+
     def norm_inf(self) -> float:
-        return max([self.vector[i].abs() for i in range(self.sz())])
+        return max([self.vector[i].abs() for i in range(self.sz())])    
 
     def max_rad(self) -> float:
         return max([self.vector[i].rad() for i in range(self.sz())])

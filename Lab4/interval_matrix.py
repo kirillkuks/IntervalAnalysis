@@ -106,6 +106,11 @@ class Matrix:
 
         return self.matrix[i][j]
 
+    def set(self, i: int, j: int, val: float) -> None:
+        assert 0 <= i < self.size and 0 <= j < self.size
+
+        self.matrix[i][j] = val
+
     def sz(self) -> int:
         return self.size
 
@@ -187,104 +192,3 @@ class Matrix:
                 res[[i, j]] = inv[i][j]
 
         return res
-
-# class IntervalMatrix(ABC):
-#     def __init__(self, size: int) -> None:
-#         self.size = size
-#         self.matrix = np.array([np.array([Interval(0, 0) for _ in range(size)]) for _ in range(size)])
-
-#     def sz(self) -> int:
-#         return self.size
-
-#     @abstractmethod
-#     def at(self, i: int, j: int) -> Interval:
-#         pass
-
-#     def set(self, i: int, j: int, interval: Interval) -> None:
-#         self.matrix[i][j] = interval.copy()
-
-#     def mul_matrix(self, matrix: Matrix) -> IntervalMatrix:
-#         assert matrix.sz() == self.size
-
-#         m = DefaultIntervalMatrix(self.size)
-
-#         for i in range(self.size):
-#             for j in range(self.size):
-#                 interval = Interval(0, 0)
-                
-#                 for k in range(self.size):
-#                     interval = interval + self.at(k, j).scale(matrix[[i, k]])
-                
-#                 m.set(i, j, interval)
-
-#         return m
-
-#     def sub_interval_matrix(self, imatrix: IntervalMatrix) -> IntervalMatrix:
-#         assert self.sz() == imatrix.sz()
-
-#         res = DefaultIntervalMatrix(self.sz())
-
-#         for i in range(self.sz()):
-#             for j in range(self.sz()):
-#                 res.set(i, j, self.at(i, j) - imatrix.at(i, j))
-        
-#         return res
-
-#     def mul_vector(self, vector: IntervalVector) -> IntervalVector:
-#         assert vector.sz() == self.size
-
-#         v = IntervalVector(self.size)
-
-#         for i in range(self.size):
-#             interval = Interval(0, 0)
-
-#             for j in range(self.size):
-#                 interval = interval + self.at(i, j) * vector.at(j)
-
-#             v.set(i, interval)
-
-#         return v
-
-#     def rad_matrix(self) -> Matrix:
-#         matrix = Matrix(self.size)
-
-#         for i in range(self.size):
-#             for j in range(self.size):
-#                 matrix[[i, j]] = self.at(i, j).rad()
-
-#         return matrix
-
-#     def mid_matrix(self) -> Matrix:
-#         matrix = Matrix(self.size)
-
-#         for i in range(self.size):
-#             for j in range(self.size):
-#                 a, b = self.at(i, j).interval_boundaries()
-#                 matrix[[i, j]] = (a + b) / 2
-
-#         return matrix
-
-#     def abs_matrix(self) -> Matrix:
-#         matrix = Matrix(self.size)
-
-#         for i in range(self.size):
-#             for j in range(self.size):
-#                 matrix[[i, j]] = self.at(i, j).abs()
-
-#         return matrix
-
-#     def norm_inf(self) -> float:
-#         norm = 0.0
-
-#         for line in self.matrix:
-#             s = sum(line[i].abs() for i in range(line.size))
-#             norm = max(norm, s)
-        
-#         return norm
-
-# class DefaultIntervalMatrix(IntervalMatrix):
-#     def __init__(self, size: int) -> None:
-#         super().__init__(size)
-
-#     def at(self, i: int, j: int) -> Interval:
-#         return self.matrix[i][j].copy()

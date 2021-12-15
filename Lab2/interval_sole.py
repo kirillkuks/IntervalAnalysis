@@ -29,37 +29,42 @@ class IntervalSole:
         self.L = self._preconditioner_matrix()
         self.x_iters = []
 
-        self.max_iters = 15
+        self.max_iters = 50
 
-    def solve(self) ->IntervalMatrix:
+    def solve(self, eps: float = 1e-5) ->IntervalMatrix:
         interval_identity_matrix = Matrix.identity(self.A.sz()).interval_matrix()
 
         LA = self.A.mul_matrix(self.L)
 
         m = interval_identity_matrix.sub_interval_matrix(LA)
-        print(m.at(0, 0).interval_boundaries())
-        print(m.at(0, 1).interval_boundaries())
-        print(m.at(1, 0).interval_boundaries())
-        print(m.at(1, 1).interval_boundaries())
-        print(m.abs_matrix().spectral_radius())
+        # print(m.at(0, 0).interval_boundaries())
+        # print(m.at(0, 1).interval_boundaries())
+        # print(m.at(1, 0).interval_boundaries())
+        # print(m.at(1, 1).interval_boundaries())
+        # print(m.abs_matrix().spectral_radius())
 
         Lb = self.L.mul_interval_vector(self.b)
 
         x_k = self._first_approximation(LA, Lb)
         self.x_iters.append(x_k)
+        
 
-        for _ in range(1, self.max_iters):
+        for k in range(1, self.max_iters):
             x = Lb + m.mul_vector(x_k)
             x_k = IntervalVector.intersection(x, x_k)
 
             self.x_iters.append(x_k)
 
-        self._plot_interval_2Dbars()
+            if IntervalVector.diff(self.x_iters[k], self.x_iters[k - 1]) < eps:
+                break
+
+        print(f'Iters num = {len(self.x_iters) - 1}')
 
         print('Result')
         print(x_k.at(0).interval_boundaries())
         print(x_k.at(1).interval_boundaries())
 
+        self._plot_interval_2Dbars()
         self._plot_bars_radiuses()
         self._plot_convergence()
 
@@ -101,7 +106,7 @@ class IntervalSole:
             c, d = x_k.at(1).interval_boundaries()
             plt.plot(np.array([a, b, b, a, a]), np.array([c, c, d, d, c]), label=f'iter num = {i}')
         
-        plt.legend(loc='upper left')
+        # plt.legend(loc='upper left')
         plt.title('Boxes')
         self._plot_F(-2, 2)
         plt.savefig('LinearBoxes.png')
@@ -121,12 +126,14 @@ class IntervalSole:
     def _plot_convergence(self) -> None:
         sz = len(self.x_iters)
 
-        last_center = self.x_iters[-1].center_point()
+        last_box = self.x_iters[-1]
 
         iter_nums = np.array([i for i in range(sz)])
-        center_deltas = np.array([np.linalg.norm(x.center_point() - last_center) for x in self.x_iters])
+        boxes_dist = np.array([IntervalVector.diff(iv, last_box) for iv in self.x_iters])
 
-        plt.semilogy(iter_nums, center_deltas)
+        # center_deltas = np.array([np.linalg.norm(x.center_point() - last_center) for x in self.x_iters])
+
+        plt.semilogy(iter_nums, boxes_dist)
         plt.title('Convergence')
         plt.savefig('LinearConv.png')
         plt.show()

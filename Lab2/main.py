@@ -77,7 +77,7 @@ def main():
     # test()
 
     sole = IntervalSole(TwoDimmensionalTaskMatrix(2, 3, Interval(1, 2)), TwoDimmensionalTaskVector(Interval(4, 5)))
-    sole.solve()
+    sole.solve(1e-16)
 
     # NonlinearIntervalSole.create(np.array([
     #         Test.f1, Test.f2
@@ -97,7 +97,7 @@ def main():
             Interval(0.25, 4), Interval(0.25, 4)
         ])))
 
-    sole.solve()
+    sole.solve(1e-16)
 
     return
 

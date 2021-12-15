@@ -1,4 +1,5 @@
 /Отчёты
+/T
 
 /Lab1/Lab1/venv
 /Lab1/Lab1/__pycache__
@@ -14,3 +15,6 @@
 
 /Lab4/.venv
 /Lab4/__pycache__
+
+/Lab5/.venv
+/Lab5/__pycache__
