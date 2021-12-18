@@ -65,6 +65,9 @@ class Interval:
         
         return Interval(a, b)
 
+    def add_number(self, num: float) -> Interval:
+        return Interval(self._a + num, self._b + num)
+
     def sub_number(self, num: float) -> Interval:
         return Interval(num - self._b, num - self._a)
 
