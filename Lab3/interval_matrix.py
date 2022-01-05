@@ -31,6 +31,28 @@ class IntervalMatrix(ABC):
     def sz(self):
         return self.matrix.size, self.matrix[0].sz()
 
+    def kaucher_sub(self, other: IntervalMatrix) -> IntervalMatrix:
+        lines, columns = other.sz()
+
+        assert self.matrix.size == lines
+        assert self.matrix[0].sz() == columns
+
+        return IntervalMatrix.create(
+            np.array([
+                IntervalVector.create(
+                    np.array([
+                    Interval.kaucher_sub(self.at(i, j), other.at(i, j))
+                for j in range(columns)])
+                )
+            for i in range(lines)])
+        )
+
+    def mid(self) -> npt.ArrayLike:
+        return np.array([
+            np.array([
+                self.at(i, j).center()
+            for j in range(self.matrix[i].sz())])
+        for i in range(self.matrix.size)])
 
 # class Matrix:
 #     @staticmethod

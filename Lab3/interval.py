@@ -12,9 +12,21 @@ class Interval:
 
         return Interval(a, b)
 
+    @staticmethod
+    def kaucher_sub(i1: Interval, i2: Interval) -> Interval:
+        a1, b1 = i1.interval_boundaries()
+        a2, b2 = i2.interval_boundaries()
+
+        return Interval(a1 - a2, b1 - b2)
+
+    @staticmethod
+    def create_mirror_interval(d: float) -> Interval:
+        d = max(-d, d)
+        return Interval(-d, d)
+
     def __init__(self, a: float = 1.0, b: float = 1.0) -> None:
-        self._a = a;
-        self._b = b;
+        self._a = a
+        self._b = b
 
     def interval_boundaries(self):
         return self._a, self._b
@@ -57,3 +69,9 @@ class Interval:
 
     def abs(self) -> float:
         return max(-self._a, self._b)
+
+    def narrow(self, k: float = 2.0) -> Interval:
+        rad = self.rad() / k
+        mid = self.center()
+
+        return Interval(mid - rad, mid + rad)

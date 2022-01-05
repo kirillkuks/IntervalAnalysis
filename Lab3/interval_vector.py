@@ -61,6 +61,11 @@ class IntervalVector(ABC):
     def norm_inf(self) -> float:
         return max([self.vector[i].abs() for i in range(self.sz())])
 
+    def norm(self) -> float:
+        return np.sqrt(np.sum(np.array([
+            interval.abs() ** 2 for interval in self.vector
+        ])))
+
     def max_rad(self) -> float:
         return max([self.vector[i].rad() for i in range(self.sz())])
 
