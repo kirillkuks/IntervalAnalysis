@@ -1,7 +1,6 @@
-from hashlib import new
-from generator import Generator, QuadraticGenerator
+from generator import QuadraticGenerator
 from interval_data import IntervalData
-from interval_regression import QuadraticIntervalRegression, QIRUndefinedCenter, QIRTol
+from interval_regression import QuadraticIntervalRegression
 
 
 import numpy as np
@@ -12,17 +11,19 @@ def work(regression_type: QuadraticIntervalRegression.RegressionType, datas: npt
     for data, info in zip(datas, additional_information):
         regression = QuadraticIntervalRegression.create(regression_type, data)
 
+        data.plot(True, info)
+
         params = regression.build_model()
         print(f'{info}: params = {params}')
 
-        regression.plot(True)
+        regression.plot(info, True)
         print('###############')
 
     print('\n')
 
 def data(case: int) -> tuple:
     if case == 0:
-        data = QuadraticGenerator().generate(25, 0, 25, [7, 5, -1 / 10])
+        data = QuadraticGenerator().generate(50, 0, 25, [7, 5, -1 / 10])
         em_data = data.add_emissions(5, 5, 1)
 
     elif case == 1:
@@ -42,8 +43,8 @@ def main():
         print(f'Case: {case}')
         idata, em_idata = data(case)
 
-        work(QuadraticIntervalRegression.RegressionType.UndifinedCenter, np.array([idata, em_idata]), np.array(['valid data', 'data with estims']))
-        work(QuadraticIntervalRegression.RegressionType.Tol, np.array([idata, em_idata]), np.array(['valid data', 'data with estims']))
+        work(QuadraticIntervalRegression.RegressionType.UndifinedCenter, np.array([idata, em_idata]), np.array(['ValidData', 'DataWithEstims']))
+        work(QuadraticIntervalRegression.RegressionType.Tol, np.array([idata, em_idata]), np.array(['ValidData', 'DataWithEstims']))
 
     return
 

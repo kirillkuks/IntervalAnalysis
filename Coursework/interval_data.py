@@ -20,12 +20,13 @@ class IntervalData(Data):
             Interval(response - np.abs(rng.normal(0, 5)), response + np.abs(rng.normal(0, 5))) for response in data.responses()
         ])
 
-    def plot(self, show: bool = True) -> None:
+    def plot(self, show: bool = True, title: str = None) -> None:
         for x, y in zip(self._factors, self._responses):
             a, b  = y.interval_boundaries()
             plt.plot([x, x], [a, b], 'k')
 
         if show:
+            plt.savefig(f'images/{title}{self.size()}')
             plt.show()
 
     def add_emissions(self, emissions_num: int, loc: float = 0, scale: float = 1) -> Data:

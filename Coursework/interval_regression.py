@@ -45,10 +45,10 @@ class QuadraticIntervalRegression(ABC):
         pass
 
     @abstractmethod
-    def additional_plot(self) -> None:
+    def additional_plot(self, name: str) -> None:
         pass
 
-    def plot(self, additional_info: bool = False) -> None:
+    def plot(self, name: str, additional_info: bool = False) -> None:
         if self.params is None:
             self.build_model()
 
@@ -58,16 +58,17 @@ class QuadraticIntervalRegression(ABC):
         plt.plot(factors, np.array([QuadraticGenerator.model(x, self.params) for x in factors]))
 
         plt.title(self.name)
+        plt.savefig(f'images/{self.name}{name}{self.data.size()}.png')
         plt.show()
 
         if additional_info:
-            self.additional_plot()
+            self.additional_plot(name)
 
 
 class QIRUndefinedCenter(QuadraticIntervalRegression):
     def __init__(self, data: IntervalData) -> None:
         super().__init__(data)
-        self.name = 'Undefined center'
+        self.name = 'UndefinedCenter'
 
         self.interval_params: IntervalVector = None
 
@@ -99,8 +100,8 @@ class QIRUndefinedCenter(QuadraticIntervalRegression):
 
         return np.copy(self.params)
 
-    def additional_plot(self) -> None:
-        self.plot_corridor()
+    def additional_plot(self, name: str) -> None:
+        self.plot_corridor(name)
 
     def b0(self, inds: npt.ArrayLike) -> tuple:
         assert len(inds) == self.params_num
@@ -147,7 +148,7 @@ class QIRUndefinedCenter(QuadraticIntervalRegression):
 
         return b_H, b_B
 
-    def plot_corridor(self) -> None:
+    def plot_corridor(self, name: str) -> None:
         low_params = np.array([self.interval_params.at(i).down() for i in range(self.interval_params.sz())])
         high_params = np.array([self.interval_params.at(i).up() for i in range(self.interval_params.sz())])
 
@@ -159,6 +160,7 @@ class QIRUndefinedCenter(QuadraticIntervalRegression):
             np.array([QuadraticGenerator.model(x, high_params) for x in factors])
         )
 
+        plt.savefig(f'images/Corridor{self.name}{name}{self.data.size()}.png')
         plt.show()
 
     def _next_comb(self, arr: npt.ArrayLike, n: int) -> bool:
@@ -241,9 +243,11 @@ class QIRTol(QuadraticIntervalRegression):
         tol = QIRTol.Tol(self.A, self.b)
         self.params = tol.max_tol()
 
+        print(f'Tol value: {tol.tol(self.params)}')
+
         return np.copy(self.params)
 
-    def additional_plot(self) -> None:
+    def additional_plot(self, name: str) -> None:
         return None
 
     def _build_system(self) -> None:
