@@ -1,8 +1,10 @@
 from __future__ import annotations
-from code import interact
+from urllib import response
 
 from generator import Generator, Data
 from interval import Interval
+
+import csv
 
 import matplotlib.pyplot as plt
 
@@ -13,6 +15,7 @@ import numpy.typing as npt
 class IntervalData(Data):
     def __init__(self, data: Generator.DataInfo) -> None:
         super().__init__()
+        self._data = data.copy()
         self._factors: npt.ArrayLike = data.factors()
         
         rng = np.random.default_rng()
@@ -35,10 +38,31 @@ class IntervalData(Data):
         for _ in range(emissions_num):
             ind = self._rng.integers(0, self.size())
 
-            new_data._responses[ind].add_number(self._rng.normal(loc, scale))
+            print(new_data._responses[ind].interval_boundaries())
+            new_data._responses[ind] = new_data._responses[ind].add_number(self._rng.normal(loc, scale))
+            print(new_data._responses[ind].interval_boundaries())
 
         return new_data
 
+    def save_as_csv(self, filename: str) -> None:
+        filename = filename.replace(' ', '')
+
+        header = ['factors', 'responses']
+        data = [[round(factor, 3), response.to_str()] for factor, response in zip(self.factors(), self.responses())]
+
+        with open(f'artifacts/{filename}.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(header)
+            writer.writerows(data)
+
     def copy(self) -> Data:
-        return None
+        data = IntervalData(self._data)
+        
+        data._factors = np.copy(self._factors)
+        data._responses = np.array([
+            response.copy() for response in self._responses
+        ])
+
+
+        return data
         

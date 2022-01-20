@@ -121,3 +121,6 @@ class Interval:
 
     def up(self) -> float:
         return self._b
+
+    def to_str(self) -> str:
+        return f'[{self.down()}, {self.up()}]'

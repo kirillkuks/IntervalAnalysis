@@ -12,6 +12,7 @@ def work(regression_type: QuadraticIntervalRegression.RegressionType, datas: npt
         regression = QuadraticIntervalRegression.create(regression_type, data)
 
         data.plot(True, info)
+        data.save_as_csv(f'{info}{data.size()}')
 
         params = regression.build_model()
         print(f'{info}: params = {params}')
@@ -23,7 +24,7 @@ def work(regression_type: QuadraticIntervalRegression.RegressionType, datas: npt
 
 def data(case: int) -> tuple:
     if case == 0:
-        data = QuadraticGenerator().generate(50, 0, 25, [7, 5, -1 / 10])
+        data = QuadraticGenerator().generate(25, 0, 25, [7, 5, -1 / 10])
         em_data = data.add_emissions(5, 5, 1)
 
     elif case == 1:
@@ -33,7 +34,9 @@ def data(case: int) -> tuple:
     else:
         return None
 
-    return IntervalData(data), IntervalData(em_data)
+    idata = IntervalData(data) 
+
+    return idata, idata.add_emissions(5, 5, 1)
 
 
 def main():

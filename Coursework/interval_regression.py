@@ -1,4 +1,5 @@
 from __future__ import annotations
+from calendar import c
 
 from generator import QuadraticGenerator
 from interval import Interval
@@ -10,6 +11,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 from scipy.optimize import shgo
+
+import csv
 
 import matplotlib.pyplot as plt
 
@@ -249,6 +252,15 @@ class QIRTol(QuadraticIntervalRegression):
 
     def additional_plot(self, name: str) -> None:
         return None
+
+    def _save_as_csv(self) -> None:
+        header = ['factor', 'response']
+        data = [[factor, response.to_str()] for factor, response in zip(self.data.factors(), self.data.responses())]
+
+        with open('sample.csv', 'w', newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(header)
+
 
     def _build_system(self) -> None:
         self.A = IntervalMatrix.create(np.array([
