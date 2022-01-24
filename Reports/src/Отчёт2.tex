@@ -1,0 +1,185 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{shorttoc}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{./images/}}
+
+\definecolor{linkcolor}{HTML}{000000}
+\definecolor{urlcolor}{HTML}{0085FF}
+\hypersetup{pdfstartview=FitH,  linkcolor=linkcolor,urlcolor=urlcolor, colorlinks=true}
+
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+\renewcommand*\contentsname{Содержание}
+
+\newcommand{\plot}[3]{
+    \begin{figure}[H]
+        \includegraphics[scale=0.7]{#1}
+        \caption{#2}
+        \label{#3}
+    \end{figure}
+}
+
+\begin{document}
+    \include{Title}
+    \newpage
+
+    \tableofcontents
+    \newpage
+
+    \section{Постановка задачи}
+    \subsection{Линейный случай}
+    Выбрать ИСЛАУ $ 2 \times 2 $ вида:
+    \begin{equation}
+        \begin{cases}
+            a \cdot x_{1} + b \cdot x_{2} = c \\
+            1 \cdot x_{1} - k \cdot x_{2} = 0
+        \end{cases}
+        \label{eq:linear}
+    \end{equation}
+    где $ a, b $ - положительные числа, $ c, k $ - положительные интервалы.\newline
+    Оценить внешнее множество решений этой системы методом Кравчика.
+    \begin{itemize}
+        \item Определить спектральный радиус матрицы
+        \item Провести оценку начального бруса решений
+    \end{itemize}
+    Провести вычисления и привести иллюстрации:
+    \begin{itemize}
+        \item Положения брусов при итерациях
+        \item Графики радиусов рабочих брусов
+        \item Сходимость алгоритма
+    \end{itemize}
+
+    \subsection{Нелинейный случай}
+    Выбрать систему вида:
+    \begin{equation}
+        \begin{cases}
+            a \cdot x_{1} + b \cdot x_{2} = c \\
+            \frac{x_{1}}{x_{2}} = k
+        \end{cases}
+        \label{eq:nonlinear}
+    \end{equation}
+    где $ a, b $ - положительные числа, $ c, k $ - положительные интервалы.\newline
+    Оценить внешнее множество решений этой системы методом Кравчика.
+    Провести вычисления и привести иллюстрации:
+    \begin{itemize}
+        \item Положения брусов при итерациях
+        \item Графики радиусов рабочих брусов
+        \item Сходимость алгоритма
+    \end{itemize}
+
+    \section{Теория}
+    \subsection{Линейный метод Кравчика}
+    Рассматриваем ИСЛУА $ \textbf{Ax} = \textbf{b} $.\newline
+    Выбираем начальное приближение $ \textbf{x}^{(0)} $ так, чтобы $ \varXi_{uni} \subseteq \textbf{x}^{(0)} $
+    и затем итерируем:
+    \begin{equation}
+        \textbf{x}^{(k+1)} = (\Lambda\textbf{b} + (I - \Lambda\textbf{A})\textbf{x}^{(k)}) \cap \textbf{x}^{(k)}, k = 0, 1, ... 
+        \label{eq:Krawczyk}
+    \end{equation}
+    где $ \Lambda $ - некоторая фиксированная точечная матрица, которая явдяется предобуславливающей матрицей для исходной ИСЛАУ.\newline
+    Обычно $ \Lambda $ берут следующим образом.
+    \begin{equation}
+        \Lambda = (\text{mid}\textbf{A})^{-1}
+    \end{equation}
+    Если $ \eta = || I - \Lambda\textbf{A} ||_{\infty} \leq 1 $, тогда в качестве начального приближения можно выбрать брус:
+    \begin{equation}
+        \textbf{x}^{(0)} = ([-\theta, \theta], ..., [-\theta, \theta])^{T}
+        \label{eq:boxapprox}
+    \end{equation}
+    где $ \theta = \frac{|| \Lambda\textbf{b} ||_{\infty}}{1 - \eta} $.\newline
+    Предложение.
+    Итерационный процесс
+    \begin{equation}
+        x^{(k+1)} = C(x^{(k)}) + d, k = 0, 1, ...
+    \end{equation}
+    сходитится, когда $ \rho(|C|) \leq 1 $, где $ |C| $ - матрица составленная из модулей элементов $ C $.
+    
+    \subsection{Общий метод Кравчика}
+    Пусть на брусе $ \textbf{X} \in IR $ задана система $ n $ линейных уравнений с $ n $ неизвестными:
+    \begin{equation}
+        F(x) = 0
+    \end{equation}
+    где $ F(x) = \{F_{1}(x), ..., F_{n}(x_{n})\}, x = (x_{1}, ..., x_{n}) $.
+    Оператором Кравчика относсительно точки $ \overline{x} $ называется отображение $ K : ID \times R \to IR^{n} $:
+    \begin{equation}
+        K(\textbf{X}, \overline{x}) = \overline{x} - \Lambda \cdot F(\overline{x}) - (I - \Lambda \cdot \textbf{L}) \cdot (\textbf{X} - \overline{x})
+    \end{equation}
+    где $ \textbf{L} $ - интервальная матрица Липшица отображения $ F $ на брусе $ \textbf{X} $, $ \Lambda $ - некоторая точечная матрица, выполняющая роль предобуславливателя.\newline
+    Тогда итерационный процесс:
+    \begin{equation}
+        \textbf{X}^{(k+1)} = \textbf{X}^{(k)} \cap K(\textbf{X}^{(k)}, \overline{x}^{(k)})
+    \end{equation}
+    где $ k = 0, 1, 2,...$, и $ \overline{x}^{(k)} \in \textbf{X}^{(k)} $, сходитсья для некоторого начального бруса $ \textbf{X}^{(0)} $.\newline
+    В качестве интервальной матрицы $ \textbf{L} $ можно взять Якобиан $ J(\textbf{X}) $, а в матрицу $ \Lambda = (\text{mid}J(\textbf{X}))^{-1} $
+
+    \section{Реализация}
+    Язык программирования: Python. Среда разработки Visual Studio Code.
+    \href{https://github.com/kirillkuks/IntervalAnalysis/tree/master/Lab2}{Ссылка на GitHub}
+
+    \section{Результаты}
+    \subsection{Линейный случай}
+    Рассмотрим систему:
+    \begin{equation}
+        \begin{cases}
+            2 \cdot x_{1} + 3 \cdot x_{2} = [4, 5] \\
+            1 \cdot x_{1} - [1, 2] \cdot x_{2} = 0
+        \end{cases}
+        \label{eq:lineartask}
+    \end{equation}
+    Матрица $ I - \Lambda A $ имеем вид:
+    \begin{equation}
+        \begin{pmatrix}
+            [0, 0] & [-0.25, 0.25] \\
+            [0, 0] & [-0.167, 0.167]
+        \end{pmatrix}
+    \end{equation}
+    Тогда $ \rho(|I - \Lambda A|) \approx 0.1667$, значит итерационный процесс \ref{eq:Krawczyk} сходиться.\newline
+    Дадим оценку начального бруса:\newline
+    $ \eta = || I - \Lambda A ||_{\infty} = 0.25 < 1 $, тогда справедлива оценка \ref{eq:boxapprox}.
+    Вычисляя коэффициент $ \theta $, получим $ \theta \approx 1.667 $.\newline
+    Критерий останова: малость изменения бруса,  $ \varepsilon < 10^{-16} $.\newline
+    Процесс остановился после 22 итераций в точке : $ \textbf{ x } = ([0.750, 1.50], [0.50, 1.00])^{T} $.\newline
+    Приведём соответствующие иллюстрации:
+
+    \plot{LinearBoxes}{Положения брусов при итерациях}{p:linearboxes}
+    \plot{LinearRads}{График радиусов рабочих брусов}{p:linearrads}
+    \plot{LinearConv}{Сходимость алгоритма}{p:linearconv}
+
+    \subsection{Нелинейный случай}
+    Рассмотрим систему с теми же коэффициентами $ a, b $ и интервалами $ c, k $, что и в \ref{eq:lineartask}:
+    \begin{equation}
+        \begin{cases}
+            2 \cdot x_{1} + 3 \cdot x_{2} = [4, 5]\\
+            \frac{x_{1}}{x_{2}} = [1, 2]
+        \end{cases}
+        \label{eq:nonlineartask}
+    \end{equation}
+    В качестве начального возьмём брус $ X^{(0)} = ([0.25, 4], [0.25, 4])^{T} $.\newline
+    Критерий останова: малость изменения бруса,  $ \varepsilon < 10^{-16} $.\newline
+    Процесс остановился на 174 итерации в точке: $ \textbf{x} = ([0.250, 2.111], [0.250, 1.412])^{T} $.\newline
+    Приведём соответствующие иллюстрации:
+    
+    \plot{NonlinearBoxes}{Положения брусов при итерациях}{p:nonlinearboxes}
+    \plot{NonlinearRads}{График радиусов рабочих брусов}{p:nonlinearrads}
+    \plot{NonlinearConv}{Сходимость алгоритма}{p:nonlinearconv}
+
+    \section{Обсуждение}
+    Сначала отметим, что системы \ref{eq:lineartask} и \ref{eq:nonlineartask} имеют одинаковое объединённое множество решений, что также видно на рисунках \ref{p:linearboxes}, \ref{p:nonlinearboxes}.
+    На рисунках \ref{p:linearboxes} и \ref{p:nonlinearboxes} видно, как с каждой итерацией уменьшается брус, только для линейного случая наблюдается куда более быстрая сходимость.
+    Через три итерации радиус бруса почти перестаёт изменяться, а центр бруса почти не перемещается, что также подтверждают рисунки \ref{p:linearrads}, \ref{p:linearconv}.
+    В свою очередь для нелинейного случая наблюдается куда более медленная сходимость: для достижения той же точности требуется на порядок больше итераций,
+    также на каждой итерации заметно уменьшее радиуса бруса и смещение его центра, рисунки \ref{p:nonlinearrads}, \ref{p:nonlinearconv}.
+    При этом в линейном случае брус значительно лучше приближает множество решений системы и со всех сторон почти "касается" множества решений.
+    Также стоит отметить, что на рисунке \ref{p:nonlinearboxes} видно, как брус приближается только с двух сторон, и никак не улучшает нижнюю оценку по каждой их координат.
+
+\end{document}

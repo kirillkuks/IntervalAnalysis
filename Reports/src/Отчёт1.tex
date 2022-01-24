@@ -1,0 +1,262 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{shorttoc}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{./images/}}
+
+\definecolor{linkcolor}{HTML}{000000}
+\definecolor{urlcolor}{HTML}{0085FF}
+\hypersetup{pdfstartview=FitH,  linkcolor=linkcolor,urlcolor=urlcolor, colorlinks=true}
+
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+\renewcommand*\contentsname{Содержание}
+
+\newcommand{\plot}[3]{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.65]{#1}
+        \caption{#2}
+        \label{#3}
+    \end{figure}
+}
+
+\begin{document}
+    \include{Title}
+    \newpage
+
+    \tableofcontents
+    \newpage
+
+    \section{Постановка задачи}
+
+    \subsection{Выявление радиуса элементов матрицы, при котором она становиться особенной}
+    \subsubsection{Постановка задачи для матрицы линейной регрессии}
+    Рассмотреть интервальную матрицу $ 2 \times 2 $ \newline
+    \begin{equation}
+        \begin{pmatrix}
+            [1 - \varepsilon, 1 + \varepsilon] & 1\\
+            [1.1 - \varepsilon, 1.1 + \varepsilon] & 1
+        \end{pmatrix}
+        \label{eq:1}
+    \end{equation}
+    и определить при каком значении $ \varepsilon $ она содержит особенные точечные матрицы.
+
+    \subsubsection{Постановка задачи для матрицы задач томографии}
+    Рассмотреть интревальную матрицу $ 2 \times 2 $ \newline
+    \begin{equation}
+        \begin{pmatrix}
+            [1 - \varepsilon, 1 + \varepsilon] & [1 - \varepsilon, 1 + \varepsilon]\\
+            [1.1 - \varepsilon, 1.1 + \varepsilon] & [1 - \varepsilon, 1 + \varepsilon]
+        \end{pmatrix}
+        \label{eq:2}
+    \end{equation}
+    и определить при каком значении $ \varepsilon $ она содержит особенные точечтные матрицы.
+
+    \subsection{Глобальная оптимизация}
+    Выбрать 2 функции для оптимизации:
+    \begin{itemize}
+        \item С одним экстремумом
+        \item С несколькими экстремумами
+    \end{itemize}
+    Для них найти глобальный минимум. Привести иллюстрации
+    \begin{itemize}
+        \item Положения брусов из рабочего списка алгоритма и положения их центров
+        \item Графики радиусов рабочих брусов в логарифмическом масштабе
+        \item Сходимость алгоритма
+    \end{itemize}
+
+    \section{Теория}
+    \subsection{Критерии неособенности интервальной матрицы}
+    \subsubsection{Критерий Баумана}
+    Интервальная матрица \textbf{$ A $} неособенна тогда и только тогда, 
+    когда определители всех её крайних матриц имеют одинаковый знак, т. е.
+    \begin{equation}
+        (\det{A^{'}}) \cdot (\det{A^{''}}) > 0
+    \end{equation}
+    $ \forall A^{'}, A^{''} \in $ vert\textbf{$ A $}.
+
+    \subsubsection{Признак Румпа}
+    Если для интервальной матрицы \textbf{$ A $} имеет место
+    \begin{equation}
+        \sigma_{max}(rad\textbf{$ A $}) \le \sigma_{min}(mid\textbf{$ A $})
+    \end{equation}
+    тогда \textbf{$ A $} неособенна.
+
+    \subsection{Глобальная оптимизация}
+    Предложение.\newline
+    Пусть даны брус $ \textbf{X} \subseteq R^{n} $, целевая функция $ f: X \to R $
+    и её интервальное расширение $ \textbf{f} : IX \to IR $. Тогда глобальный минимум
+    $ f^{*} = \inf_{x \in \textbf{X}}f(x) $ существует, и для всех ведущих брусов
+    $ \textbf{Y} $ алгоритма GlobOpt имеет место включение $ f^{*} \in f(\textbf{Y}) $.
+
+
+    \section{Реализация}
+    Язык программирования: Python. Среда разработки Visual Studio Code.
+    \href{https://github.com/kirillkuks/IntervalAnalysis/tree/master/Lab1/Lab1}{Ссылка на GitHub}
+    (Выявление радиуса элементов, при котором она становиться особенной).\newline
+    \href{https://github.com/kirillkuks/IntervalAnalysis/tree/master/Lab1/Lab2}{Ссылка на GitHub}
+    (Глобальная оптимизация).
+
+    \section{Результаты}
+    \subsection{Выявление радиуса элементов матрицы, при котором она становиться особенной}
+    Значение $ \varepsilon $ вычислялось с начального значения $ \varepsilon_{0} = 0 $ и шагом $ \Delta = 0.0001 $
+
+    \subsubsection{Матрица линейной регресии}
+    Критерий Баумана: интервальная матрица \textbf{$ A $} становиться особенной при знвчении
+    $ \varepsilon = \varepsilon_{B} \approx 0.05 $.
+    Полученная интервальная матрица:
+    \begin{equation}
+        \begin{pmatrix}
+            [0.95, 1.05] & 1\\
+            [1.05, 1.15] & 1
+        \end{pmatrix}
+    \end{equation}
+    имеет особенную точечную матрицу.
+
+    \begin{equation}
+        \begin{vmatrix}
+            1.05 & 1\\
+            1.05 & 1
+        \end{vmatrix}
+        = 0
+    \end{equation}
+
+    Признак Румпа: интервальная матрица \textbf{$ A $} становиться особенной при значении
+    $ \varepsilon = \varepsilon_{R} \approx 0.0345 $.
+    Полученная интервальная матрица:
+    \begin{equation}
+        \begin{pmatrix}
+            [0.9655, 1.0345] & 1\\
+            [1.0655, 1.1345] & 1
+        \end{pmatrix}
+    \end{equation}
+    не имеет особенной точечной матрицы.
+
+    \subsubsection{Матрица задач томографии}
+    Критерий Баумана и признак Румпа: интреваьная матрица становиться особенной при значении
+    $ \varepsilon \approx 0.0244 $
+    Полученная интервальная матрица:
+    \begin{equation}
+        \begin{pmatrix}
+            [0.9756, 1.0244] & [0.9756, 1.0244]\\
+            [1.0756, 1.1244] & [0.9756, 1.0244]
+        \end{pmatrix}
+    \end{equation}
+    имеет особенную точечную матрицу.
+
+    \begin{equation}
+        \begin{vmatrix}
+            1.0244 & 0.9756\\
+            1.0756 & 1.0244
+        \end{vmatrix}
+        = 0.00004 \approx 0
+    \end{equation}
+
+    \subsection{Глобальная оптимизация}
+    Для проверки работы алгоритма для функции с одним экстремумом была выбрана функция Бута:
+    \begin{equation}
+        f(x, y) = (x + 2y - 7)^{2} + (2x + y -5)^{2}
+    \end{equation}
+    которая имеет минимум $ f(1, 3) = 0 $.
+    Начальный брус: $ -10 \leq x \leq 10, -10 \leq y \leq 10 $. Заданная точность решения: $ \varepsilon = 10^{-5} $ (Здесь и далее имеется в виду погрешность значения минимума)
+    \newline
+    Были полученны следующие результаты:
+    \newline
+    Точка минимума: $ x_{0} =  (1.00037, 2.99988) $.\newline
+    Значение минимума: $ f(x_{0}) = -6.32 \cdot 10^{-6} $.\newline
+    Число итераций: $ i = 195 $.\newline
+    Ведущий брус: $ 0.99976 \leq x \leq 1.00098, 2.99227 \leq y \leq 3.00049 $
+    \plot{BoothFunctionBoxes}{Положения брусов из рабочего списка}{p:BoothBoxes}
+    \plot{BoothFunctionCenters}{Положения центров брусов}{p:BoothCenters}
+    \plot{BoothFunctionRads}{График радиусов рабочих брусов}{p:BoothRads}
+    \plot{BoothFunctionConvergence}{Сходимость алгоритма}{p:BoothConv}
+
+    \noindent
+    Для проверки работы алгоритма для функции  с одним экстремумом была выбрана функция Химмельблау.
+    \begin{equation}
+        f(x, y) = (x^{2} + y - 11)^{2} + (x + y^{2} - 7)^{2}
+    \end{equation}
+    которая имеет минимумы $ f(3, 2) = f(-2.81, 3.13) = f(-3.78, -3.28) = f(3.58, -1.85) $.
+    Начальный брус: $ -5 \leq x \leq 5, -5 \leq y \leq 5 $. Заданная точность решения: $ \varepsilon = 10^{-5} $
+    \newline
+    Были полученны следующие результаты:\newline
+    Точка минимума: Значение точки минимума "мечется" между несколькими значениями, близкими к реальным точкам минимума.
+    Значения в первых пяти брусах рабочего списка:\newline
+    $ x_{0} = (3.00018, 1.99981) $;\newline
+    $ x_{0} = (3.58429, -1.84844) $;\newline
+    $ x_{0} = (-2.80502, 3.13141) $;\newline
+    $ x_{0} = (-2.80548, 3.13141) $;\newline
+    $ x_{0} = (-3.77944, -3.28339) $.\newline
+    Значение минимума: $ f(x_{0}) = -5.75 \cdot 10^{-6} $\newline
+    Число итераций: $ i = 375 $\newline
+    Ведущий брус: $ 2.99988 \leq x \leq 3.00049, 1.99951 \leq y \leq 2.00012 $
+    \plot{HimmelblauFunctionBoxes}{Положения брусов из рабочего списка}{p:HimmelblauBoxes}
+    \plot{HimmelblauFunctionCenters}{Положения центров брусов}{p:HimmelblauCenters}
+    \plot{HimmelblauFunctionRads}{График радиусов рабочих брусов}{p:HimmelblauRads}
+    \plot{HimmelblauFunctionConvergence}{Сходимость алгоритма}{p:HimmelblauConv}
+    \noindent(На рисунке \ref{p:HimmelblauConv} считается расстояние до ближайшей реальной точки минимума)
+
+    \section{Обсуждение}
+    \subsection{Выявление радиуса элементов матрицы, при котором она становиться особенной}
+    Из результатов видно, что матрица \ref{eq:1} становиться особенной при большем радиусе элементов $ \varepsilon = 0.05 $,
+    чем матрица \ref{eq:2}, для которой $ \varepsilon = 0.0244 $. Что неудивительно, 
+    так как множество всех точечных матриц \ref{eq:1} содержиться в множестве всех точечных матриц \ref{eq:2}..\newline
+    Так же стоит отметить, что для матрица \ref{eq:1} признак Румпа дал неверное значение радиуса $ \varepsilon = 0.0345 $,
+    так как признак Румпа не является достаточным условием для особенности матрицы.\newline
+    Также можно рассмотреть матрицу не линейной, а полиномиальной регресии. Она будет иметь вид:
+    \begin{equation}
+        X = 
+        \begin{pmatrix}
+            x_{1}^{n} & ... & x_{1}^{2} & x_{1} & 1\\
+            x_{2}^{n} & ... & x_{2}^{2} & x_{2} & 1\\
+            ... & ... & ... & ... & ...\\
+            x_{m}^{n} & ... & x_{m}^{2} & x_{m} & 1\\
+        \end{pmatrix}
+    \end{equation}
+    Рассмотрим пример.
+    Интервальная матрица \ref{eq:1} становиться особенной при $ \varepsilon = 0.05 $.
+    Перейдём к матрице полиномиальной регресии:
+    \begin{equation}
+        \begin{pmatrix}
+            [a - \varepsilon, a + \varepsilon]^{2} & [a - \varepsilon, a + \varepsilon] & 1 \\
+            [1 - \varepsilon, 1 + \varepsilon]^{2} & [1 - \varepsilon, 1 + \varepsilon] & 1 \\
+            [1.1 - \varepsilon, 1.1 + \varepsilon]^{2} & [1.1 - \varepsilon, 1.1 + \varepsilon] & 1
+        \end{pmatrix}
+    \end{equation}
+    \noindent
+    Эта интервальная матрица содержит точечную матрицу
+    \begin{equation}
+        \begin{pmatrix}
+            a^{2} & a & 1 \\
+            1.05^{2} & 1.05 & 1 \\
+            1.05^{2} & 1.05 & 1 \\
+        \end{pmatrix}
+    \end{equation}
+    которая для любого $ a $ будет особенной (что видно, если, например, разложить определитель этой матрицы по первой строке).
+    Таким образом, если интервальная матрица является особенной, тогда и матрица для полиномиальной регресии большего порядка будет особенной.
+    Отсюда можно сделать вывод, что радиус $ \varepsilon $, при котором матрица полиномиальной регресии становиться особенной не уменьшается с увеличением степени полинома.
+    % Рассматриваем случай $ m = n $. Пусть $ x_{i} = [\dot x_{i} - \varepsilon,\dot x_{i} + \varepsilon] $, где $ \dot x_{i} $ - точечное значение.
+    % С увеличением степени $ n $ в выражении $ x_{i}^{n} $ радиус полученного интревала будет возрастать. Поэтому при увелечении степени $ n $ минимальный радиус, 
+    % при котором матрица $ X $ будет становиться особенной, будет уменьшаться.
+
+    \subsection{Глобальная оптимизация}
+    Из рисунка \ref{p:BoothBoxes} видно, как в увеличивается количество брусов, и как уменьшается радиус брусов в окрестности точки минимума.
+    Также из рисунка \ref{p:BoothCenters} видно, с увелечением номера итерации центры брусов из рабочего списка сгущаются в окрестности точки минимума.
+    Стоит отметить, что в для обеих функций радиусы(имеется в виду максимальный радиус из обоих интервалов) брусов в рабочем списке увеличиваются не равномерно.
+    Из рисунка \ref{p:HimmelblauBoxes} видно, что алгоритм глобальной оптимизации находит все минимумы функции Химмельблау: в окрестности всех точек минимума заметно сильное дробление брусов.
+    Точка минимума "мечется" между окрестностемя реальных точек минимума, при этом это "метание" никак неупорядоченно, что вижно на рисунке \ref{p:HimmelblauCenters}
+    На рисунках \ref{p:BoothCenters}, \ref{p:HimmelblauCenters} можно заметить, что несколько первых итерация алгоритм почти никак не приближается к точке минимума, и только с некоторой итерации начинает приближаться стабильно улучшать значение.
+    Что также подтверждают рисунки \ref{p:BoothConv}, \ref{p:HimmelblauConv}: примерно на пятидесяти первых итерациях расстояние до реальной точки минимума не уменьшается (за исклюяением редких выбросов). 
+    Но после пятидесятой итерации наблюдается стабильное (хотя и не монотонное) приближение к точке минимума.
+
+\end{document}

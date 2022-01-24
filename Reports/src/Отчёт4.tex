@@ -1,0 +1,222 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{shorttoc}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{./images/}}
+
+\definecolor{linkcolor}{HTML}{000000}
+\definecolor{urlcolor}{HTML}{0085FF}
+\hypersetup{pdfstartview=FitH,  linkcolor=linkcolor,urlcolor=urlcolor, colorlinks=true}
+
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+\renewcommand*\contentsname{Содержание}
+
+\newcommand{\plot}[3]{
+    \begin{figure}[H]
+        \includegraphics[scale=0.7]{#1}
+        \caption{#2}
+        \label{#3}
+    \end{figure}
+}
+
+\begin{document}
+    \include{Title}
+    \newpage
+    
+    \tableofcontents
+    \newpage
+
+    \section{Постановка задачи}
+    \subsection{Получение решения по теореме Зюзина}
+    Выбрать ИСЛАУ $ 2 \times 2 $. Построить итерационную схему с разложением матрицы на диагональную и недиагональную части.\newline
+    Провести вычисления и привести иллюстрации:
+    \begin{itemize}
+        \item Брусов итерационного процесса
+        \item Радиусов решения в зависимости от номера итерации
+    \end{itemize}
+
+    \subsection{Получение формального решения ИСЛАУ субдифференциальным методом Ньютона}
+    Для ИСЛАУ
+    \begin{equation}
+        \begin{pmatrix}
+            [3, 4] & [5, 6] \\
+            [-1, 1] & [-3, 1] \\
+        \end{pmatrix}
+        \cdot x = 
+        \begin{pmatrix}
+            [-3, 3] \\
+            [-1, 2]
+        \end{pmatrix}
+        \label{eq:subdifftask1}
+    \end{equation}
+    построить итерационную схему субдифференциального метода Ньютона.\newline
+    Провести вычисления и привести иллюстрации:
+    \begin{itemize}
+        \item Брусов итерационного процесса
+        \item Сравнить результаты с решением ИСЛАУ
+        \begin{equation}
+            \begin{pmatrix}
+                [3, 4] & [5, 6] \\
+                [-1, 1] & [-3, 1] \\
+            \end{pmatrix}
+            \cdot x = 
+            \begin{pmatrix}
+                [-3, 4] \\
+                [-1, 2]
+            \end{pmatrix}
+        \end{equation}
+        \label{eq:subdifftask2}
+    \end{itemize}
+
+    \section{Теория}
+    \subsection{Теорема Зюзина}
+    Говорят, что квадартная интервальная $ n \times n $ матрица $ \textbf{A} $ иммет диагональное преобладание, если для любого $ i = 1, 2, ..., n $, если
+    \begin{equation}
+        \langle \textbf{a}_{ii} \rangle > \sum_{j \neq i} | \textbf{a}_{ij} |
+    \end{equation}
+    $ \langle \textbf{a} \rangle $ - мигнитуда интервала. \newline
+    
+    \noindent\textbf{Теорема Зюзина} \newline
+    Для ИСЛАУ
+    \begin{equation}
+        \textbf{C}x = \textbf{d}
+    \end{equation}
+    где $ \textbf{C} \in KR^{n \times n}, \textbf{d} \in KR^{n} $. Правильная проекция матрицы $ \textbf{C} $ имеет диагональное преобладание.
+    Тогда решение системы существует и единственно.
+    Пусть $ \textbf{D} = diag\{ \textbf{c}_{11}, \textbf{c}_{22}, ..., \textbf{c}_{nn} \}, \textbf{E} $ - матрица, полученная из $ \textbf{C} $ занулением диагональных элементов.
+    Тогда для некоторого $ x^{0} $ итерационный процесс:
+    \begin{equation}
+        x^{k + 1} = \text{inv}\textbf{D}(\textbf{d} \ominus \textbf{Ex}^{(k)}), k = 0, 1, ...
+        \label{eq:iterzyuzin}
+    \end{equation}
+    в силу диагонального преобладания $ \textbf{C} $ будет сходиться к единственной неподвижной точке.
+
+    \subsection{Субдифференциальный метод Ньютона}
+    Рассматриваем ИСЛАУ:
+    \begin{equation}
+        \textbf{C}x = \textbf{d}
+        \label{eq:subdiffgeneraltask}
+    \end{equation}
+    Отображение $ si: KR^{n} \to R^{2n} $ вида
+    \begin{equation}
+        (\textbf{x}_{1}, \textbf{x}_{2}, ..., \textbf{x}_{n}) \to 
+        (\underline{x}_{1}, \underline{x}_{2}, ..., \underline{x}_{n}, \overline{x}_{1}, \overline{x}_{2}, ..., \overline{x}_{n})
+    \end{equation}
+    называется простейшим погружением. \newline
+    Для решения индуцированных уравнения $ G(y) = 0 $ такого что
+    \begin{equation}
+        G(y) = \text{si}(\textbf{C}\text{si}^{-1}(\textbf{y})) - \text{si}(\textbf{d})
+    \end{equation}
+    в $ R^{2n} $ развит субдифференциальный метод Ньютона: \newline
+    Выбираем некоторое начальное приближение $ x^{0} \in R^{2n} $. Если $ (k - 1) $ приближение $ x^{(k - 1)} \in R^{2n}, k = 1, 2, ... $ уже найдено,
+    то вычисляем какой-нибудь субградиент $ D^{(k - 1)} $ отображение $ G $ в точке $ x^{(k - 1)} $ и полагаем
+    \begin{equation}
+        x^{(k)} = x^{(k - 1)} - \tau(D^{(k - 1)})^{-1}G(x^{(k - 1)})
+        \label{eq:itersubdiff}
+    \end{equation}
+    где $ \tau \in [0, 1] $ - некотарая константа.
+    Начальное приближение можно найти из решения "средней" системы.
+    \begin{equation}
+        (\text{mid}\textbf{C})^{'} \cdot x^{(0)} = \text{si}\textbf{d}
+    \end{equation}
+    где через $ ' $ обозначена точечная матрица вида:
+    \begin{equation}
+        A = 
+        \begin{pmatrix}
+            A^{+} & -A^{-} \\
+            -A^{-} & A^{+}    
+        \end{pmatrix}
+    \end{equation}
+ 
+    \section{Реализация}
+    Язык программирования: Python. Среда разработки: Visual Studio Code.
+    \href{https://github.com/kirillkuks/IntervalAnalysis/tree/master/Lab4}{Ссылка на GitHub}.
+
+    \section{Результаты}
+    \subsection{Получение решения по теореме Зюзина}
+    Возьмём матрицу
+    \begin{equation}
+        \textbf{C} = 
+        \begin{pmatrix}
+            [5, 6] & [3, 4] \\
+            [-1, 1] & [2, 3]
+        \end{pmatrix}
+    \end{equation}
+    и вектор $ \textbf{x} = ([1, 2], [2, 4])^{T} $ и построим вектор правых частей:
+    \begin{equation}
+        \textbf{b} = \textbf{C} \cdot x =
+        \begin{pmatrix}
+            [11, 28] \\
+            [2, 14]
+        \end{pmatrix}
+    \end{equation}
+
+    \noindent Будем рассмотривать систему:
+    \begin{equation}
+        \begin{cases}
+            [5, 6] \cdot x_{1} + [3, 4] \cdot x_{2} = [11, 28] \\
+            [-1, 1] \cdot x_{1} + [2, 3] \cdot x_{2} = [2, 14]
+        \end{cases}
+        \label{eq:zyuzintask}
+    \end{equation}
+    В качестве начального приближения возьмём точку $ \textbf{x}^{(0)} = ([-10, 10], [-10, 10])^{T} $
+    Видно, что интервальная матрица $ \textbf{C} $ имеет диагональное преобладание.
+    Значит для ИСЛАУ \ref{eq:zyuzintask} справедлива теорема Зюзина. \newline
+    Критерий останова итерационного процесса \ref{eq:iterzyuzin} - малость изменения бруса на текущей итерации относительно бруса на предыдущей итерации: $ \varepsilon < 10^{-16} $. \newline
+
+    \noindent Процесс остановился после $ 52 $ итераций в точке $ \textbf{x} = ([1.0, 2.0], [2.0, 4.0])^{T} $. \newline
+    Приведём соответствующие иллюстрации:
+    \plot{ZyuzinBoxes}{Положения брусов при итерациях}{p:zuyzinboxes}
+    \plot{ZyuzinRadiuses}{График радиусов брусов в зависимости от номера итерации}{p:zyuzinradiuses}
+
+    \subsection{Получение формального решения ИСЛАУ субдифференциальным методом Ньютона}
+    Сначала рассмотрим решение системы \ref{eq:subdifftask1}. \newline
+    Критерий останова итерационного процесса \ref{eq:itersubdiff} - малость изменения бруса на текущей итерации относительно бруса на предыдущей итерации: $ \varepsilon < 10^{-16} $.
+    Параметр $ \tau = 1 $.
+
+    \noindent Процесс остановился после $ 4 $ итераций в точке $ \textbf{x} = ([0.0, 0.5], [-0.5, 0.167])^{T} $. \newline
+    Приведём соответствующие иллюстрации.
+    \plot{SubdifferentialNewtonTask1Boxes}{Положения брусов при итерациях}{p:subdifftask1boxes}
+    \plot{SubdifferentialNewtonTask1Radiuses}{График радиусов брусов в зависимости от номера итерации}{p:subdifftask2radiuses}
+
+    \noindent
+    Теперь рассмотрим решение системы \ref{eq:subdifftask2}. \newline
+    Итерационный процесс не сходится, а через $ 8 $ итерации уходит в цикл длиной $ 4 $ точки. 
+    Параметр $ \tau = 1 $.
+    Соответствующие иллюстрации для первых $ 50 $ итераций.
+    \plot{SubdifferentialNewtonTask2Tau1Boxes}{Положения брусов при итерациях, $ \tau = 1 $}{p:subdifftask2tau1boxes}
+    \plot{SubdifferentialNewtonTask2Tau1Radiuses}{График радиусов брусов в зависимости от номера итерации, $ \tau = 1 $}{p:subdifftask2tau1radiuses}
+
+    \noindent
+    Уменьшим параметр $ \tau = 0.1 $.
+    Соответствующие иллюстрации для первых 100 итераций.
+    \plot{SubdifferentialNewtonTask2Tau01Boxes}{Положения брусов при итерациях, $ \tau = 0.1 $}{p:subdifftask2tau01boxes}
+    \plot{SubdifferentialNewtonTask2Tau01Radiuses}{График радиусов брусов в зависимости от номера итерации, $ \tau = 0.1 $}{p:subdifftask2tau01radiuses}
+    Итерационный процесс также не сходится, как и в случае с $ \tau = 1 $, а ходит по циклу той длины $ 5 $.
+
+    \section{Обсуждения}
+    Из результатов решения системы \ref{eq:zyuzintask} видно, что итерационная схема с разложением матрицы на диагональную и недиагональную для системы, удовлетворяющей условию теормы Зюзина, сходиться.
+    На рисунках \ref{p:zuyzinboxes} - \ref{p:zyuzinradiuses} можно заметить, что до четвёртой итерации радиус бруса монотонно убывает и, достигнув минимального значения, 
+    которое сильно меньше радиуса бруса решения, на четвёртой итерации, затем постопенно начинает сходиться к решению системы. \newline
+
+    \noindent
+    Из результатов решения систем \ref{eq:subdifftask1}, \ref{eq:subdifftask2} видно, что у субдифференциального метода Ньютона могут возникнуть проблемы со сходимостью.
+    Итерационный процесс \ref{eq:itersubdiff} для системы \ref{eq:subdifftask1} сходится достаточно быстро.
+    В свою очередь для системы \ref{eq:subdifftask2} процесс не сходится, а зацикливается.
+    В таком случае подбор параметра $ \tau $ может улучшить ситуацию:
+    \plot{SubdifferentialNewtonTask2Tau1Cyrcle}{Цикл брусьев при итерациях, система \ref{eq:subdifftask2}, $ \tau = 1 $}{p:subdifftask2tau1cyrcle}
+    \plot{SubdifferentialNewtonTask2Tau01Cyrcle}{Цикл брусьев при итерациях, система \ref{eq:subdifftask2}, $ \tau = 0.1 $}{p:subdifftask2tau01cyrcle}
+    На рисунках \ref{p:subdifftask2tau1cyrcle} - \ref{p:subdifftask2tau01cyrcle} видно, что при значении $ \tau = 0.1 $ брусья в цикле изменяются на каждой итерации меньше, чем при $ \tau = 1 $.
+    Хотя радиус брусьев почти не менятеся при разных значениях $ \tau $, что видно на рисунках \ref{p:subdifftask2tau1radiuses}, \ref{p:subdifftask2tau01radiuses}.
+    Также стоит отметить,что при $ \tau = 0.1 $ средний брус в цикле $ \textbf{x} = ([-0.15, 0.8], [-0.4, 0.13]) $ достаточно близко к решению системы \ref{eq:subdifftask2}. \newline
+\end{document}

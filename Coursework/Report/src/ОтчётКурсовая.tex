@@ -1,0 +1,332 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{shorttoc}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{./images/}}
+
+\definecolor{linkcolor}{HTML}{000000}
+\definecolor{urlcolor}{HTML}{0085FF}
+\hypersetup{pdfstartview=FitH,  linkcolor=linkcolor,urlcolor=urlcolor, colorlinks=true}
+
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+\renewcommand*\contentsname{Содержание}
+
+\newcommand{\plot}[3]{
+    \begin{figure}[H]
+        \includegraphics[scale=0.75]{#1}
+        \caption{#2}
+        \label{#3}
+    \end{figure}
+}
+
+\begin{document}
+    \include{Title}
+    \newpage
+
+    \tableofcontents
+    \newpage
+
+    \listoffigures
+    \newpage
+
+    \listoftables
+    \newpage
+
+    \section{Постановка задачи}
+    Для набора данных с интервальной неопределённостью построить нелинейную регрессию методом центра неопределённости и методом распознающего функционала.
+    Сравнить результаты.
+
+    \section{Теория}
+    Пусть величина $ y $ является функцией от независимых аргументов $ x_{1}, x_{2}, ..., x_{p} $.
+    \begin{equation}
+        y = f(x, \beta)
+        \label{eq:general}
+    \end{equation}
+    где $ x = (x_1, ..., x_n) $ - вектор независимых переменных, $ \beta = (\beta_{1}, ..., \beta_{k}) $ - вектор параметров функции.
+    Имеется набор $ x = {x_{1}, ..., x_{m}}, y = {y_{1}, ..., y_{m}} $, необходимо найти оценку вектора параметров $ \beta $, который соответствует конкретной функции из семейства \ref{eq:general}.
+    Будем рассматривать задачу, в которой $ x $ - точечный вектор, а $ y $ - интервальный вектор.
+    \newline
+
+    \noindent Будем рассматривать функцию вида:
+    \begin{equation}
+        y = \beta_{0} + \beta_{1} \cdot x + \beta_{2} \cdot x^{2}
+    \end{equation}
+
+    \subsection{Метод центра неопределённости}
+    Для удобства отсортируем все входные параметры по $ x $ по возрастанию, и сместим значения так, чтобы $ x_{0} = 0 $.
+    $ x_{i} - \text{число}, y_{i} = [h_{Hi}, h_{Bi}] - \text{интервал} \ \forall i = 1, ..., m $.
+
+    \noindent\textbf{Вычисление коэффициента $ \beta_{0} $}
+    \newline
+    Рассмотрим тройку наблюдений $ y_{i}, y_{j}, y_{k} $ с упорядоченными значениями $ x_{i} < x_{j} < x_{k} $.
+    Для каждой тройки индексов $ i < j < k $ вычислим допустимые значения коэффициента $ \beta_{0} $:
+    \begin{equation}
+        \beta_{0H0jk} = h_{H0}, \text{если} \ i = 0
+    \end{equation}
+    \begin{equation}
+        \beta_{0Hijk} = \frac{x_{i}x_{j}x_{k}}{x_{j} - x_{i}} (\frac{h_{Hi}}{x_{i}(x_{k} - x_{i})} - \frac{h_{Bj}}{x_{j}(x_{k} - x_{j})} + \frac{h_{Hk}(x_{j} - x_{i})}{x_{k}(x_{k} - x_{i})(x_{k} - x_{j})})
+    \end{equation}
+    \begin{equation}
+        \beta_{0B0jk} = h_{B0}, \text{если} \ i = 0
+    \end{equation}
+    \begin{equation}
+        \beta_{0Bijk} = \frac{x_{i}x_{j}x_{k}}{x_{j} - x_{i}} (\frac{h_{Bi}}{x_{i}(x_{k} - x_{i})} - \frac{h_{Hj}}{x_{j}(x_{k} - x_{j})} + \frac{h_{Bk}(x_{j} - x_{i})}{x_{k}(x_{k} - x_{i})(x_{k} - x_{j})})
+    \end{equation}
+    Далее вычисляем:
+    \begin{equation}
+        \beta_{0min} = \max_{ijk}(\beta_{0Hijk})
+    \end{equation}
+    \begin{equation}
+        \beta_{0max} = \min_{ijk}(\beta_{0Bijk})
+    \end{equation}
+
+    \noindent\textbf{Вычисление коэффициентов $ \beta_{1} $}
+    \newline
+    Аналогично вычислению $ \beta_{0} $ вычислим допустимые значения коэффициента $ \beta_{1} $:
+    \begin{equation}
+        \beta_{1Hijk} = \frac{(x_{i} + x_{k})(x_{j} + x_{k})}{x_{j} - x_{i}} (-\frac{h_{Bi}}{x_{k}^{2} - x_{i}^{2}} + \frac{h_{Hj}}{(x_{k}^{2} - x_{j}^{2})} - \frac{h_{Bk}(x_{j}^{2} - x_{i}^{2})}{(x_{k}^{2} - x_{j}^{2})(x_{k}^{2} - x_{i}^{2})})
+    \end{equation}
+    \begin{equation}
+        \beta_{1Bijk} = \frac{(x_{i} + x_{k})(x_{j} + x_{k})}{x_{j} - x_{i}} (-\frac{h_{Hi}}{x_{k}^{2} - x_{i}^{2}} + \frac{h_{Bj}}{(x_{k}^{2} - x_{j}^{2})} - \frac{h_{Hk}(x_{j}^{2} - x_{i}^{2})}{(x_{k}^{2} - x_{j}^{2})(x_{k}^{2} - x_{i}^{2})})
+    \end{equation}
+    Далее вычислим:
+    \begin{equation}
+        \beta_{1min} = \max_{ijk}(\beta_{1Hijk})
+    \end{equation}
+    \begin{equation}
+        \beta_{1max} = \min_{ijk}(\beta_{1Bijk})
+    \end{equation}
+
+    \noindent\textbf{Вычисление коэффициента $ \beta_{2} $}
+    \newline
+    Аналогично вычислению $ \beta_{0} $ и $ \beta_{1} $ вычислим допустимые значения коэффициета $ \beta_{2} $:
+    \begin{equation}
+        \beta_{2Hijk} = \frac{ \frac{h_{Hi}}{(x_{k} - x_{j})} - \frac{x_{Bj}}{(x_{k} - x_{j})} + \frac{h_{Hk}(x_{j} - x_{i})}{(x_{k} - x_{j})(x_{k} - x_{i})} }{(x_{j} - x_{i})}
+    \end{equation}
+    \begin{equation}
+        \beta_{2Bijk} = \frac{ \frac{h_{Bi}}{(x_{k} - x_{j})} - \frac{x_{Hj}}{(x_{k} - x_{j})} + \frac{h_{Bk}(x_{j} - x_{i})}{(x_{k} - x_{j})(x_{k} - x_{i})} }{(x_{j} - x_{i})}
+    \end{equation}
+    Далее вычислим:
+    \begin{equation}
+        \beta_{2min} = \max_{ijk}(\beta_{2Hijk})
+    \end{equation}
+    \begin{equation}
+        \beta_{2max} = \min_{ijk}(\beta_{2Bijk})
+    \end{equation}
+
+    \noindent\textbf{Оценка параметров зависимости}
+    Далее для всех пар $ \beta_{imin}, \beta_{imax}, i = 1, 2, 3 $ проведём следующее сравнение.
+    \begin{itemize}
+        \item Если $ \beta_{imin} \leq \beta_{imax} $, то выборка совместна и значение коэффициента $ \beta_{i} $ лежит в интервале $ [\beta_{imin}, \beta_{imax}] $.
+        \item Иначе выборка несовместна.
+    \end{itemize}
+    И в качестве точечной оценки коэффициента $ \beta_{i} $ возьмём $ \hat{\beta_{i}} = \frac{\beta_{imin} + \beta_{imax}}{2} $.
+    \newline
+
+    \subsection{Метод распознающего функционала}
+    Перепишем исходную задачу в матричном виде:
+    \begin{equation}
+        X\beta = y
+    \end{equation}
+    где $ x, y $ - исходный набор, $ \beta $ - искомый вектор параметров,
+    \begin{equation}
+        X = 
+        \begin{pmatrix}
+            1 & x_{1} & x_{1}^2 \\
+            1 & x_{2} & x_{2}^2 \\
+            ... & ... & ... \\
+            1 & x_{m} & x_{m}^2
+        \end{pmatrix}
+    \end{equation}
+    \newline
+    Введём распознающий функционал $ \text{Tol}(\beta, X, y) $.
+    \begin{equation}
+        \text{Tol}(\beta, X, y) = \min_{1 \leq i \leq m}(\text{rad}y_{i} - | \text{mid}y_{i} - \sum_{j = 1}^{n}X_{ij}\beta_{j} |)
+    \end{equation}
+    \newline
+    Тогда оценкой ветора параметров будет $ \arg\max_{\beta}\text{Tol}(\beta, X, y) $
+    
+    \section{Реализация}
+    Язык программирования: Python. Среда разработки: Visual Studio Code.
+    \href{https://github.com/kirillkuks/IntervalAnalysis/tree/master/Coursework}{Ссылка на GitHub}
+
+    \section{Результаты}
+    \subsection{Генерация данных}
+    Рассмотрим модель \ref{eq:general}. Для заданного набора входных значений $ x = {x_{1}, ..., x_{m}} $ посчитаем точечный вектор выходных значений $ y = {y_{1}, ..., y_{m}}$.
+    Затем построим интервальный вектор выходных значений следующим образом: вместо каждого точечного значения $ y_{i} $ возьмём интервал $ [y_{i} - |\delta_{i1}|, y_{i} + |\delta_{i2}|] $,
+    где $ \delta_{i1}, \delta_{i2} $ - случайные величины, $ \delta_{i1}, \delta_{i2} \in N(0, 5), \forall i = 1, ..., m $.
+
+    \subsection{Результаты}
+    Рассмотрим две модели:
+    \begin{equation}
+        y = 7 + 5x - \frac{1}{10}x^{2}
+        \label{eq:task1}
+    \end{equation}
+    \noindent И
+    \begin{equation}
+        y = -42 - 17x + 5x^{2}
+        \label{eq:task2}
+    \end{equation}
+
+    \noindent\textbf{Модель \ref{eq:task1}} \newline
+    Сначала сгенерируем совместную выборку для модели \ref{eq:task1} размера $ 25 $. Исходный набор данных на рисунке ниже.
+    \plot{ValidData25}{Совместная выборка для модели \ref{eq:task1}}{p:validdata25}
+    
+    \noindent Метод центра неопределённости дал следующие результаты:
+    \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{| c | c | c | c |}
+                \hline
+                & $ \beta_{imin} $ & $ \beta_{imax} $ & $ \hat{\beta} $ \\
+                \hline
+                $ \beta_{0} $ & 3.461 & 7.926 & 5.694 \\
+                \hline
+                $ \beta_{1} $ & 4.789 & 5.441 & 5.115 \\
+                \hline
+                $ \beta_{2} $ & -0.113 & -0.091 & -0.102 \\
+                \hline
+            \end{tabular}
+        \end{center}
+        \caption{Оценки коэффициентов зависимости методом центра неопределённости для выборки по модели \ref{eq:task1}}
+        \label{t:validdata25}
+    \end{table}
+
+    \noindent Тогда найденная зависимость будет иметь следующий вид:
+    \plot{UndefinedcenterValidData25}{Метод центра неопределённости для выборки по модели \ref{eq:task1}}{p:ucvaliddata25}
+    \plot{CorridorUndefinedCenterValidData25}{Коридор совместных зависимостей}{p:corridorvaliddata25}
+
+    \noindent Для наглядности также рассмотрим выборку на том же промежутке, но с большим числом элементов ($ 150 $), и посмотрим на полеченный коридор совместных зависимостей.
+    \plot{CorridorUndefinedCenterValidData150}{Коридор совместных зависимостей для выборки большего размера}{p:corridorvaliddata150}
+
+    \noindent В свою очередь метод распознающего функционала дал следующую оценку коэффициентов:
+    $ \hat{\beta_{0}} = 7.376, \hat{\beta_{1}} = 4.950, \hat{\beta_{2}} = -0.099 $.
+    Причём значение распознающего функционала на этом наборе положительно: $ \text{Tol}(\hat{\beta}) = 0.260 $.
+    \newline
+    И график построенной зависимости:
+    \plot{TolValidData25}{Метод распознающего функционала для выборки по модели \ref{eq:task1}}{p:tolvaliddata25}
+
+    \noindent Теперь внесём пять случайных малых изменений в исходную выборку, сделав её несовместной.
+    Новая выборка будет иметь следующий вид:
+    \plot{DataWithEstims25}{Несовместная выборка для модели \ref{eq:task1}}{p:estimdata25} 
+    
+    \noindent Методом центра неопределённости получим следующие результаты:
+    \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{| c | c | c | c |}
+                \hline
+                & $ \beta_{imin} $ & $ \beta_{imax} $ & $ \hat{\beta} $ \\
+                \hline
+                $ \beta_{0} $ & 471.345 & -780.171 & - \\
+                \hline
+                $ \beta_{1} $ & 105.733 & -46.105 & - \\
+                \hline
+                $ \beta_{2} $ & 1.300 & -3.301 & - \\
+                \hline
+            \end{tabular}
+        \end{center}
+        \caption{Оценки коэффициентов зависимости методом центра неопределённости для несовместной выборки по модели \ref{eq:task1}}
+        \label{t:estimdata25}
+    \end{table}
+    \noindent Тем самым выборка несовместна и метод центра неопределённости даёт некорректные значения коэффициентов. 
+
+    \noindent В свою очередь метод распознающего функционала дал следующую оценку коэффициентов:
+    $ \hat{\beta_{0}} = 1.366, \hat{\beta_{1}} = 6.394, \hat{\beta_{2}} = -0.155 $.
+    Но в этом случае значение распознающего функционала на этом наборе меньше нуля: $ \text{Tol}(\hat{\beta}) = -2.548 $.
+    \newline
+    И график построенной зависимости:
+    \plot{TolDataWithEstims25}{Метод распознающего функционала для несовместной выборки по модели \ref{eq:task1}}{p:tolestimdata25}
+
+    \noindent\textbf{Модель \ref{eq:task2}} \newline
+    Теперь сгенерируем совместную выборку для модели \ref{eq:task2} размера $ 50 $ и проделаем с ней аналогичную работу.
+    Исходная выборка имеет следующий вид:
+    \plot{ValidData50}{Совместная выборка для модели \ref{eq:task2}}{p:validdata50}
+
+    \noindent Метод центра неопределённости дал следующие результаты:
+    \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{| c | c | c | c |}
+                \hline
+                & $ \beta_{imin} $ & $ \beta_{imax} $ & $ \hat{\beta} $ \\
+                \hline
+                $ \beta_{0} $ & -42.438 & -41.488 & -41.963 \\
+                \hline
+                $ \beta_{1} $ & -17.374 & -16.768 & -17.071 \\
+                \hline
+                $ \beta_{2} $ & 4.972 & 5.047 & 5.009 \\
+                \hline
+            \end{tabular}
+        \end{center}
+        \caption{Оценки коэффициентов зависимости методом центра неопределённости для выборки по модели \ref{eq:task2}}
+        \label{t:validdata50}
+    \end{table}
+
+    \noindent Тогда график построенной зависимости будет иметь следующий вид:
+    \plot{UndefinedCenterValidData50}{Метод центра неопределённости для выборки по модели \ref{eq:task2}}{p:ucvaliddata50}
+    \plot{CorridorUndefinedCenterValidData50}{Коридор совместных зависимостей}{p:corridorvaliddata50}
+
+    \noindent Метод распознающего функционала для следующую оценку коэффициентов зависимости:
+    $ \hat{\beta_{0}} = -10.0, \hat{\beta_{1}} = -10.0, \hat{\beta_{2}} = 2.425 $.
+    Причём значение распознающего функционала на этом значении меньше нуля: $ \text{Tol}(\hat{\beta}) = -36.398 $.
+    
+    \noindent И тогда график найденной зависимости будет иметь следующий вид:
+    \plot{TolValidData50}{Метод распознающего функционала для выборки по модели \ref{eq:task2}}{p:tolvaliddata50}
+
+    \noindent Теперь внесём пять малых случайных изменений в выборку так, чтобы она стала несовместной. Тогда получим выборку:
+    \plot{DataWithEstims50}{Несовместная выборка для модели \ref{eq:task2}}{p:estimdata50}
+
+    \noindent Метод центра неопределённости дал следующие результаты:
+    \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{| c | c | c | c |}
+                \hline
+                & $ \beta_{imin} $ & $ \beta_{imax} $ & $ \hat{\beta} $ \\
+                \hline
+                $ \beta_{0} $ & 584.565 & -1575.076 & - \\
+                \hline
+                $ \beta_{1} $ & 719.263 & -292.551 & - \\
+                \hline
+                $ \beta_{2} $ & 35.251 & -83.229 & - \\
+                \hline
+            \end{tabular}
+        \end{center}
+        \caption{Оценки коэффициентов зависимости методом центра неопределённости для несовместной выборки по модели \ref{eq:task2}}
+        \label{t:estimdata50}
+    \end{table}
+
+    \noindent А в свою очередь метод распзнающего функционала дал следующую оценку коэффициентов:
+    $ \hat{\beta_0} = -5.886, \hat{\beta_{1}} = -10.0, \hat{\beta_{2}} = 2.257 $.
+    Распознающий функционал на этом наборе также имеет отрицательное значение: $ \text{Tol}(\hat{\beta}) = -40.183 $.
+
+    \noindent График построенной зависимости имеет следующий вид:
+    \plot{TolDataWithEstims50}{Метод распознающего функционала для несовместной выборки по модели \ref{eq:task2}}{p:tolestimdata50}
+
+    \section{Обсуждение}
+    Из полученных результатов можно сделать следующие наблюдения.
+    Для совместной выборки метод центра неопределённости более точно оценивает коэффициенты параметров зависимости.
+    Особенно заметно лучшие оценки коэффициентов метод центра неопределённости строит для второй выборки, что видно на рисунках ~\ref{p:ucvaliddata25}, ~\ref{p:ucvaliddata50}, ~\ref{p:tolvaliddata25}, ~\ref{p:tolvaliddata50}.
+    Причём для обеих выборок построенная методом центра неопределённости зависимость проходит через все интервалы, что видно на рисунках ~\ref{p:ucvaliddata25}, ~\ref{p:ucvaliddata50}.
+    \newline
+    Но в свою очередь метод центра неопределённости оказывается сильно чувствительным к выбросам, что можно заметить из результатов в таблицах ~\ref{t:estimdata25}, ~\ref{t:estimdata50}.
+    Даже при совсем небольших отклонениях от совместных данных метод центра неопределённости даёт некорректные результаты.
+    Метод распознающего функционала является куда менее чувствительным к выбросам, что видно на рисунках ~\ref{p:tolvaliddata25}, ~\ref{p:tolestimdata25},
+    хотя всё же на выборке с выбросами максимальное значение распознающего функционала становиться отрицательным, что также говорит о несовместности системы.
+    \newline
+    Также стоит отметить, что даже на совместной выборке метод распознающего функционала может давать плохие результаты, что видно на рисунке ~\ref{p:tolvaliddata50}.
+    Причём максимальное значение распознающего функционала в этом случае сильно меньше нуля.  
+    \newline
+    Из рисунков ~\ref{p:corridorvaliddata25}, ~\ref{p:corridorvaliddata50}, ~\ref{p:corridorvaliddata150} можно сделать предположение, что ширина коридора зависит от числа элементов в выборке.
+    Это особенно наглядно видно, на рисунках ~\ref{p:corridorvaliddata25}, ~\ref{p:corridorvaliddata150}.
+    \newline
+    Также стоит отметить, что метод центра неопределённости даёт наименьшую неопределённость для коэффициента $ \beta_{2} $, а наибольшую для коэффициента $ \beta_{0} $, что видно на таблицах ~\ref{t:validdata25} - ~\ref{t:estimdata50}.
+
+\end{document}
